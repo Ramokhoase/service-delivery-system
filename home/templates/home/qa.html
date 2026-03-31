@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+{% block title %}CityMenderSA — Q&A Solutions{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: #c8ddb0;
+    background-image:
+      linear-gradient(rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(140,175,100,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 25px 25px, 25px 25px;
+  }
+
+  .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+  }
+
+  .page-header {
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: #555;
+  }
+
+  .faq-card {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .faq-item:last-child { border-bottom: none; }
+
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 20px 24px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .faq-question:hover { background: #f9f9f9; }
+
+  .faq-question.open { color: #1a5c2a; background: #f0faf2; }
+
+  .faq-icon {
+    font-size: 20px;
+    font-weight: 300;
+    color: #1a5c2a;
+    flex-shrink: 0;
+    margin-left: 16px;
+    transition: transform 0.3s;
+  }
+
+  .faq-question.open .faq-icon { transform: rotate(45deg); }
+
+  .faq-answer {
+    display: none;
+    padding: 0 24px 20px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.7;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .faq-answer.open { display: block; }
+
+  .faq-answer ul {
+    margin: 10px 0 10px 20px;
+  }
+
+  .faq-answer ul li {
+    margin-bottom: 6px;
+  }
+
+  .faq-answer a {
+    color: #1a5c2a;
+    font-weight: 600;
+  }
+
+  .contact-card {
+    background: white;
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    margin-top: 24px;
+  }
+
+  .contact-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a5c2a;
+    margin-bottom: 14px;
+  }
+
+  .contact-item {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  .contact-item a {
+    color: #1a5c2a;
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+
+  <div class="page-header">
+    <h1>Q&A Solutions</h1>
+    <p>Frequently asked questions about CityMenderSA</p>
+  </div>
+
+  <div class="faq-card">
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 1. What is CityMenderSA?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        CityMenderSA is South Africa's first no-registration, interactive map, free public civic reporting platform that allows residents to report and track local infrastructure issues such as broken streetlights, potholes, water leaks, and sanitation problems. It is a citizen tool — we do not fix issues, but provide a clear and accessible way to document and track them.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 2. Does CityMenderSA fix the issues I report?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        No. CityMenderSA does not fix or resolve any reported issues. We serve as a community-driven tracking tool. You are still responsible for reporting the issue to your municipality or service provider. You can use your municipal reference number when submitting your CityMenderSA report to link both.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 3. Why should I use CityMenderSA if I still have to report to the municipality?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Because CityMenderSA helps you:
+        <ul>
+          <li>Track and update your reported issues in one place</li>
+          <li>Keep a personal record and history of your submissions</li>
+          <li>View all community reports on an interactive map</li>
+          <li>Identify trends and hotspots (e.g. frequent water pipe bursts, neglected areas)</li>
+          <li>Create a public record that strengthens accountability and transparency</li>
+        </ul>
+        CityMenderSA also benefits municipalities and ward councillors by providing a centralised view of reported issues, helping prioritise high-impact areas, and supporting data-driven planning.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 4. Is it free to use?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes. CityMenderSA is 100% free for public use. No subscriptions, no accounts needed.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 5. Do I need to create an account or log in?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        No. You don't need to log in or register to use CityMenderSA. It's designed to be quick, simple, and accessible to everyone.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 6. What kinds of issues can I report?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Currently, we support reports under the following categories:
+        <ul>
+          <li>Streetlights (e.g. broken fittings, poles, cable theft, lights on during the day)</li>
+          <li>Water Leaks (e.g. pipe bursts, meter damage)</li>
+          <li>Waste & Sanitation (e.g. blocked drains, sewerage spills, illegal dumping)</li>
+          <li>Roads & Potholes (e.g. potholes, sinkholes, faded markings, broken signs)</li>
+        </ul>
+        More categories may be added in future updates.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 7. How do I report an issue?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <ul>
+          <li>Go to the Report page</li>
+          <li>Select your language and reporting mode</li>
+          <li>Select the issue type and add details</li>
+          <li>Optionally add your municipal reference number</li>
+          <li>Submit and receive a CityMenderSA reference number</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 8. Can I track or update my report later?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes! Use your CityMenderSA reference number to view the report status, add updates or additional information, and see if other users have reported the same issue.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 9. Who can see my reports?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        All infrastructure reports (excluding personal data) are publicly visible on the CityMenderSA interactive map to promote transparency and civic accountability.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 10. Is my personal information safe?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes. We are fully POPIA-compliant. You are not required to share personal information, and if you do, it is stored securely and never sold or shared without consent. See our full Privacy Policy.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 11. Can CityMenderSA reports be used for ward meetings or activism?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Absolutely. The platform was built with community leaders and is already being piloted by groups like the eThekwini Ratepayers and Residents Association (ERRA). The data and maps can support petitions, presentations, or civic campaigns.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 12. Can I report anonymously?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Yes. You can report an issue without entering your name or contact information. If you choose to include contact details, it allows us to follow up if necessary, but it's entirely optional.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 13. Who developed CityMenderSA?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        CityMenderSA was developed by a University of KwaZulu-Natal student in collaboration with civic leaders, community organisations, and tech partners passionate about transparent, grassroots solutions. Our first rollout partner is the eThekwini Ratepayers and Residents Association (ERRA).
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 14. Is CityMenderSA a government project? How is it funded?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        No, CityMenderSA is an independent South African startup, built by a student and developed in partnership with community leaders. We are not affiliated with any government department or municipality. The platform runs entirely through donations and community support.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        🔹 15. I have an idea or suggestion. How can I get in touch?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        We'd love to hear from you! Contact us at:
+        <ul>
+          <li>📧 <a href="mailto:enquiries@citymendersa.co.za">enquiries@citymendersa.co.za</a> — General enquiries</li>
+          <li>📧 <a href="mailto:support@citymendersa.co.za">support@citymendersa.co.za</a> — Support on any issues</li>
+          <li>📧 <a href="mailto:feedback@citymendersa.co.za">feedback@citymendersa.co.za</a> — Feedback and ideas</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="contact-card">
+    <h3>Still have questions?</h3>
+    <div class="contact-item">📧 <a href="mailto:enquiries@citymendersa.co.za">enquiries@citymendersa.co.za</a> — General enquiries</div>
+    <div class="contact-item">📧 <a href="mailto:support@citymendersa.co.za">support@citymendersa.co.za</a> — Support</div>
+    <div class="contact-item">📧 <a href="mailto:feedback@citymendersa.co.za">feedback@citymendersa.co.za</a> — Feedback</div>
+  </div>
+
+</div>
+
+{% block extra_js %}
+<script>
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-question').forEach(q => q.classList.remove('open'));
+  document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+  if (!isOpen) {
+    btn.classList.add('open');
+    answer.classList.add('open');
+  }
+}
+</script>
+{% endblock %}
+
+{% endblock %}

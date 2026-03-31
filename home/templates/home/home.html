@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}CityMenderSA — Home{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: #c8ddb0;
+    background-image:
+      linear-gradient(rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(140,175,100,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 25px 25px, 25px 25px;
+  }
+
+  .yellow-banner {
+    background: #f5c518;
+    text-align: center;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+
+  .page-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 90px - 56px);
+    padding: 40px 16px;
+  }
+
+  .blue-card {
+    background: rgba(52, 90, 140, 0.93);
+    border-radius: 16px;
+    padding: 44px 48px;
+    width: 100%;
+    max-width: 620px;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  }
+
+  .blue-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .blue-card p {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 28px;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(245,197,24,0.5); }
+    50% { transform: scale(1.04); box-shadow: 0 8px 32px rgba(245,197,24,0.8); }
+  }
+
+  .cta-btn {
+    display: inline-block;
+    width: 100%;
+    max-width: 360px;
+    padding: 18px 0;
+    background: #f5c518;
+    color: #1a1a1a;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+
+  .cta-btn:hover {
+    background: #e0b000;
+    animation-play-state: paused;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="yellow-banner">
+  We are SA's most advanced Infrastructure Tracking Platform.
+  Using Multiple layers of data and information CityMenderSA
+  is building a truly incredible picture of what's happening in our communities!
+</div>
+<!-- LOW DATA BANNER -->
+<div style="
+  background: #1a1a2e;
+  color: white;
+  text-align: center;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 2;
+">
+  📡 Uses less than 50KB per report — works on 2G and 3G. No Wi-Fi needed.
+</div>
+
+<div class="page-body">
+  <div class="blue-card">
+    <h2>Log and track city issues in South Africa for FREE</h2>
+    <p>Auto Escalation for every Municipality in SA</p>
+    <a href="{% url 'report_form' %}" class="cta-btn">Start Logging Issues Here</a>
+  </div>
+</div>
+
+{% endblock %}

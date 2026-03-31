@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block title %}CityMenderSA — Report Status{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: #c8ddb0;
+    background-image:
+      linear-gradient(rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(140,175,100,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 25px 25px, 25px 25px;
+  }
+
+  .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  }
+
+  .error-box {
+    background: #fff3f3;
+    border: 1.5px solid #f5c2c2;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #a32d2d;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .error-box strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .ref-box {
+    background: #f0faf2;
+    border: 1.5px dashed #1a5c2a;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .ref-box .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .ref-box .ref-number {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a5c2a;
+    letter-spacing: 2px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .key { color: #888; }
+  .detail-row .val { font-weight: 600; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #ebebeb;
+    margin: 24px 0;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .status-received { background: #fff3cd; color: #856404; }
+  .status-review   { background: #cfe2ff; color: #084298; }
+  .status-progress { background: #d1ecf1; color: #0c5460; }
+  .status-resolved { background: #d4edda; color: #155724; }
+
+  .tracker { margin: 24px 0; }
+
+  .tracker-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .step-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  .step-dot.done {
+    background: #1a5c2a;
+    border-color: #1a5c2a;
+    color: white;
+  }
+
+  .step-dot.done::after { content: '✓'; }
+
+  .step-dot.active {
+    background: #f0faf2;
+    border-color: #1a5c2a;
+  }
+
+  .step-dot.active::after {
+    content: '●';
+    font-size: 8px;
+    color: #1a5c2a;
+  }
+
+  .step-line {
+    width: 2px;
+    height: 28px;
+    background: #e0e0e0;
+    margin: 2px 0;
+  }
+
+  .step-line.done { background: #1a5c2a; }
+
+  .step-text {
+    padding-top: 1px;
+    margin-bottom: 30px;
+  }
+
+  .step-text strong {
+    font-size: 13px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .step-text span { font-size: 11px; color: #999; }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .actions a {
+    display: block;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-primary { background: #1a5c2a; color: white; }
+  .btn-primary:hover { background: #145022; }
+  .btn-outline { background: white; color: #1a5c2a; border: 1.5px solid #1a5c2a; }
+  .btn-outline:hover { background: #f0faf2; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="card">
+
+    {% if error %}
+      <div class="error-box">
+        <strong>Report Not Found</strong>
+        {{ error }}
+      </div>
+      <a href="{% url 'track_report' %}" class="btn-primary" style="display:block;padding:13px;border-radius:8px;text-decoration:none;text-align:center;font-weight:600;color:white;background:#1a5c2a;">Try Again</a>
+
+    {% elif report %}
+      <div class="ref-box">
+        <div class="label">Reference Number</div>
+        <div class="ref-number">{{ report.reference_number }}</div>
+      </div>
+
+      {% if report.status == 'Received' %}
+        <span class="status-badge status-received">Status: Received</span>
+      {% elif report.status == 'Under Review' %}
+        <span class="status-badge status-review">Status: Under Review</span>
+      {% elif report.status == 'In Progress' %}
+        <span class="status-badge status-progress">Status: In Progress</span>
+      {% elif report.status == 'Resolved' %}
+        <span class="status-badge status-resolved">Status: Resolved</span>
+      {% else %}
+        <span class="status-badge status-received">Status: {{ report.status }}</span>
+      {% endif %}
+
+      <p class="section-title">Report Details</p>
+      <div class="detail-row"><span class="key">Issue Type</span><span class="val">{{ report.get_issue_type_display }}</span></div>
+      <div class="detail-row"><span class="key">Address</span><span class="val">{{ report.address }}</span></div>
+      <div class="detail-row"><span class="key">Language</span><span class="val">{{ report.get_language_display }}</span></div>
+      <div class="detail-row"><span class="key">Submitted</span><span class="val">{{ report.submitted_at|date:"d M Y, H:i" }}</span></div>
+
+      <hr class="divider"/>
+      <p class="section-title">Progress Tracker</p>
+
+      <div class="tracker">
+        <div class="tracker-step">
+          <div class="step-col">
+            <div class="step-dot done"></div>
+            <div class="step-line done"></div>
+          </div>
+          <div class="step-text">
+            <strong>Report Received</strong>
+            <span>Your report has been logged by the system</span>
+          </div>
+        </div>
+
+        <div class="tracker-step">
+          <div class="step-col">
+            <div class="step-dot {% if report.status == 'Under Review' or report.status == 'In Progress' or report.status == 'Resolved' %}done{% elif report.status == 'Received' %}active{% endif %}"></div>
+            <div class="step-line {% if report.status == 'In Progress' or report.status == 'Resolved' %}done{% endif %}"></div>
+          </div>
+          <div class="step-text">
+            <strong>Sent to Municipality</strong>
+            <span>Forwarded to the correct department</span>
+          </div>
+        </div>
+
+        <div class="tracker-step">
+          <div class="step-col">
+            <div class="step-dot {% if report.status == 'In Progress' or report.status == 'Resolved' %}done{% elif report.status == 'Under Review' %}active{% endif %}"></div>
+            <div class="step-line {% if report.status == 'Resolved' %}done{% endif %}"></div>
+          </div>
+          <div class="step-text">
+            <strong>Under Review</strong>
+            <span>Municipality is reviewing your issue</span>
+          </div>
+        </div>
+
+        <div class="tracker-step">
+          <div class="step-col">
+            <div class="step-dot {% if report.status == 'Resolved' %}done{% elif report.status == 'In Progress' %}active{% endif %}"></div>
+            <div class="step-line {% if report.status == 'Resolved' %}done{% endif %}"></div>
+          </div>
+          <div class="step-text">
+            <strong>In Progress</strong>
+            <span>Repair team has been dispatched</span>
+          </div>
+        </div>
+
+        <div class="tracker-step">
+          <div class="step-col">
+            <div class="step-dot {% if report.status == 'Resolved' %}done{% endif %}"></div>
+          </div>
+          <div class="step-text">
+            <strong>Resolved</strong>
+            <span>Issue has been fixed and closed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a href="{% url 'track_report' %}" class="btn-outline">Track Another Report</a>
+        <a href="{% url 'report_form' %}" class="btn-primary">Report a New Issue</a>
+      </div>
+
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

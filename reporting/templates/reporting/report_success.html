@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %}CityMenderSA — Report Submitted{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: #c8ddb0;
+    background-image:
+      linear-gradient(rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(140,175,100,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 25px 25px, 25px 25px;
+  }
+
+  .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    text-align: center;
+  }
+
+  .tick {
+    width: 64px;
+    height: 64px;
+    background: #f0faf2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 30px;
+    color: #1a5c2a;
+  }
+
+  .card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a5c2a;
+    margin-bottom: 8px;
+  }
+
+  .card > p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .ref-box {
+    background: #f0faf2;
+    border: 1.5px dashed #1a5c2a;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 24px 0;
+  }
+
+  .ref-box .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .ref-box .ref-number {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a5c2a;
+    letter-spacing: 2px;
+  }
+
+  .ref-box .ref-note {
+    font-size: 12px;
+    color: #777;
+    margin-top: 6px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .key { color: #888; }
+  .detail-row .val { font-weight: 600; color: #1a1a1a; }
+
+  .status-badge {
+    display: inline-block;
+    background: #fff3cd;
+    color: #856404;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 20px;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .actions a {
+    display: block;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-primary {
+    background: #1a5c2a;
+    color: white;
+  }
+
+  .btn-primary:hover { background: #145022; }
+
+  .btn-outline {
+    background: white;
+    color: #1a5c2a;
+    border: 1.5px solid #1a5c2a;
+  }
+
+  .btn-outline:hover { background: #f0faf2; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="card">
+    <div class="tick">&#10003;</div>
+    <h2>Report Submitted Successfully</h2>
+    <p>Your issue has been received and sent to your municipality. You will receive an SMS confirmation shortly.</p>
+
+    {% if report %}
+    <div class="ref-box">
+      <div class="label">Your Reference Number</div>
+      <div class="ref-number">{{ report.reference_number }}</div>
+      <div class="ref-note">Save this number to track your report</div>
+    </div>
+
+    <div class="detail-row">
+      <span class="key">Issue Type</span>
+      <span class="val">{{ report.get_issue_type_display }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="key">Address</span>
+      <span class="val">{{ report.address }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="key">Language</span>
+      <span class="val">{{ report.get_language_display }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="key">Mode</span>
+      <span class="val">{{ report.get_mode_display }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="key">Submitted</span>
+      <span class="val">{{ report.submitted_at|date:"d M Y, H:i" }}</span>
+    </div>
+
+    <div class="status-badge">Status: {{ report.status }}</div>
+    {% endif %}
+
+    <div class="actions">
+      <a href="{% url 'track_report' %}" class="btn-primary">Track My Report</a>
+      <a href="{% url 'report_form' %}" class="btn-outline">Report Another Issue</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

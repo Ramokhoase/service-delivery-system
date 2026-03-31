@@ -1,0 +1,1072 @@
+{% extends 'base.html' %}
+{% block title %}CityMenderSA — Report an Issue{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: #c8ddb0;
+    background-image:
+      linear-gradient(rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.6) 1px, transparent 1px),
+      linear-gradient(rgba(140,175,100,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,175,100,0.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 25px 25px, 25px 25px;
+  }
+
+  .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  }
+
+  .card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a5c2a;
+    margin-bottom: 6px;
+  }
+
+  .card .subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a1a1a;
+    background: #fafafa;
+    margin-bottom: 18px;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #1a5c2a;
+    background: white;
+  }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #ebebeb;
+    margin: 24px 0;
+  }
+
+  /* ── LANGUAGE BADGE ── */
+  .lang-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0faf2;
+    border: 1px solid #1a5c2a;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+  }
+
+  .lang-bar.visible { display: flex; }
+
+  .lang-bar .lang-badge {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a5c2a;
+  }
+
+  .lang-bar .lang-change {
+    font-size: 12px;
+    color: #1a5c2a;
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;
+  }
+
+  /* ── PROGRESS INDICATOR (Standard Mode) ── */
+  .progress-wrap {
+    margin-bottom: 24px;
+  }
+
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-step {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #bbb;
+    position: relative;
+  }
+
+  .progress-step.active { color: #1a5c2a; }
+  .progress-step.done   { color: #1a5c2a; }
+
+  .progress-step .dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 auto 4px;
+    color: #bbb;
+    transition: all 0.3s;
+  }
+
+  .progress-step.active .dot {
+    border-color: #1a5c2a;
+    background: #1a5c2a;
+    color: white;
+  }
+
+  .progress-step.done .dot {
+    border-color: #1a5c2a;
+    background: #1a5c2a;
+    color: white;
+  }
+
+  .progress-step.done .dot::after { content: '✓'; }
+
+  .progress-line {
+    height: 3px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-line-fill {
+    height: 100%;
+    background: #1a5c2a;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .step-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 16px;
+    text-align: right;
+  }
+
+  /* ── STANDARD FORM STEPS ── */
+  .std-step { display: none; }
+  .std-step.active { display: block; }
+
+  /* ── STEP NAV BUTTONS ── */
+  .step-nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .back-btn {
+    padding: 12px 20px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    background: white;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover { border-color: #888; }
+
+  .next-btn {
+    flex: 1;
+    padding: 12px;
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .next-btn:hover { background: #145022; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+
+  .submit-btn:hover { background: #145022; }
+
+  /* ── PRIVACY NOTE ── */
+  .privacy-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0faf2;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: -10px;
+    margin-bottom: 18px;
+  }
+
+  .privacy-note .lock { font-size: 16px; flex-shrink: 0; }
+
+  .privacy-note p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .privacy-note strong { color: #1a5c2a; }
+
+  /* ── MODE SELECTOR ── */
+  .mode-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .mode-option {
+    flex: 1;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-option input[type="radio"] { display: none; }
+  .mode-option:has(input:checked) { border-color: #1a5c2a; background: #f0faf2; }
+  .mode-option strong { display: block; font-size: 13px; color: #1a5c2a; margin-bottom: 4px; }
+  .mode-option span { font-size: 11px; color: #777; }
+
+  /* ── SIMPLIFIED FORM ── */
+  .simplified-card {
+    background: rgb(244, 246, 244);
+    border-radius: 14px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  }
+
+  .simp-progress-bar-wrap {
+    background: #e0e0e0;
+    border-radius: 20px;
+    height: 10px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .simp-progress-bar-fill {
+    height: 100%;
+    background: #1a5c2a;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+  }
+
+  .simp-step-counter {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .s-step { display: none; }
+  .s-step.active { display: block; }
+
+  .s-step h3 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .s-step p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .s-step select,
+  .s-step input[type="text"],
+  .s-step input[type="tel"],
+  .s-step textarea {
+    width: 100%;
+    padding: 16px 18px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 18px;
+    font-family: inherit;
+    color: #1a1a1a;
+    background: #fafafa;
+    margin-bottom: 0;
+  }
+
+  .s-step select:focus,
+  .s-step input:focus,
+  .s-step textarea:focus {
+    outline: none;
+    border-color: #1a5c2a;
+    background: white;
+  }
+
+  .s-step textarea { min-height: 120px; resize: vertical; }
+
+  .big-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .big-option {
+    padding: 18px 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    cursor: pointer;
+    text-align: left;
+    background: white;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .big-option:hover { border-color: #1a5c2a; background: #f0faf2; color: #1a5c2a; }
+  .big-option.selected { border-color: #1a5c2a; background: #f0faf2; color: #1a5c2a; }
+
+  .s-nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .s-back-btn {
+    padding: 16px 24px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    background: white;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .s-back-btn:hover { border-color: #888; }
+
+  .s-next-btn {
+    flex: 1;
+    padding: 16px;
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .s-next-btn:hover { background: #145022; }
+
+  .s-submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 28px;
+    transition: background 0.2s;
+  }
+
+  .s-submit-btn:hover { background: #145022; }
+
+  .simp-privacy-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0faf2;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 16px;
+  }
+
+  .simp-privacy-note p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .simp-privacy-note strong { color: #1a5c2a; }
+
+  .back-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .back-link a { color: #1a5c2a; font-weight: 600; text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+
+  <!-- LOW DATA NOTE -->
+<div style="
+  background: #1a1a2e;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 560px;
+">
+  📡 Uses less than 50KB per report — works on 2G and 3G. No Wi-Fi needed.
+</div>
+
+  <!-- ── MODE SELECTOR CARD ── -->
+  <div class="card" id="mode-selector">
+    <h2 id="page-title">Report an Issue</h2>
+    <p class="subtitle" id="page-subtitle">Help improve your community by logging a service delivery problem</p>
+
+    <!-- LANGUAGE BADGE (shown after language selected) -->
+    <div class="lang-bar" id="lang-bar">
+      <span class="lang-badge" id="lang-badge-text">🌐 English selected</span>
+      <button class="lang-change" onclick="resetLanguage()" id="lang-change-btn">Change language</button>
+    </div>
+
+    <!-- LANGUAGE SELECT (hidden after selection) -->
+    <div id="lang-select-wrap">
+      <p class="section-title" id="step1-label">Step 1 — Select your language</p>
+      <label for="language-select" id="lang-label">Preferred Language</label>
+      <select id="language-select" onchange="translatePage(this.value)" required>
+        <option value="">-- Choose a language --</option>
+        <option value="english">English</option>
+        <option value="zulu">Zulu</option>
+        <option value="xhosa">Xhosa</option>
+        <option value="sotho">Sotho</option>
+        <option value="afrikaans">Afrikaans</option>
+      </select>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- MODE -->
+    <p class="section-title" id="step2-label">Step 2 — Choose reporting mode</p>
+    <div class="mode-group">
+      <label class="mode-option" onclick="selectMode('standard')">
+        <input type="radio" name="mode_choice" value="standard"/>
+        <strong id="mode-standard">Standard Mode</strong>
+        <span id="mode-standard-desc">For users comfortable with technology</span>
+      </label>
+      <label class="mode-option" onclick="selectMode('simplified')">
+        <input type="radio" name="mode_choice" value="simplified"/>
+        <strong id="mode-simplified">Simplified Mode</strong>
+        <span id="mode-simplified-desc">Larger text, one step at a time</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- STANDARD FORM — with progress steps   -->
+  <!-- ══════════════════════════════════════ -->
+  <div id="standard-form" style="display:none; width:100%; max-width:560px; margin-top:20px;">
+    <div class="card">
+
+      <!-- Language badge in standard form -->
+      <div class="lang-bar visible" id="std-lang-bar">
+        <span class="lang-badge" id="std-lang-badge">🌐 English selected</span>
+        <button class="lang-change" onclick="resetLanguage()">Change language</button>
+      </div>
+
+      <!-- Progress indicator -->
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="progress-step active" id="std-dot-1">
+            <div class="dot">1</div>
+            <span id="std-label-1">Issue</span>
+          </div>
+          <div class="progress-step" id="std-dot-2">
+            <div class="dot">2</div>
+            <span id="std-label-2">Location</span>
+          </div>
+          <div class="progress-step" id="std-dot-3">
+            <div class="dot">3</div>
+            <span id="std-label-3">Contact</span>
+          </div>
+        </div>
+        <div class="progress-line">
+          <div class="progress-line-fill" id="std-progress-fill" style="width:33%"></div>
+        </div>
+        <div class="step-label" id="std-step-label">Step 1 of 3</div>
+      </div>
+
+      <form method="POST" action="{% url 'report_form' %}" id="std-form-el">
+        {% csrf_token %}
+        <input type="hidden" name="language" id="std-lang-val" value="english"/>
+        <input type="hidden" name="mode" value="standard"/>
+
+        <!-- STD STEP 1: Issue type -->
+        <div class="std-step active" id="std-step-1">
+          <label id="issue-label">Issue Type</label>
+          <select name="issue_type" id="issue_type" required>
+            <option value="" id="issue-placeholder">-- Select issue type --</option>
+            <option value="pothole"     id="issue-pothole">Pothole</option>
+            <option value="water_leak"  id="issue-water">Water Leak</option>
+            <option value="waste"       id="issue-waste">Uncollected Waste</option>
+            <option value="electricity" id="issue-electricity">Electricity Outage</option>
+            <option value="other"       id="issue-other">Other</option>
+          </select>
+          <div class="step-nav">
+            <button type="button" class="next-btn" onclick="stdNext(1)">Next →</button>
+          </div>
+        </div>
+
+        <!-- STD STEP 2: Location & description -->
+        <div class="std-step" id="std-step-2">
+          <label id="address-label">Street Address</label>
+          <input type="text" name="address" id="address"
+                 placeholder="e.g. 12 Main Street, Soweto" required/>
+          <label id="desc-label">Describe the issue</label>
+          <textarea name="description" id="description"
+                    placeholder="Briefly describe the problem..." required></textarea>
+          <div class="step-nav">
+            <button type="button" class="back-btn" onclick="stdBack(2)">← Back</button>
+            <button type="button" class="next-btn" onclick="stdNext(2)">Next →</button>
+          </div>
+        </div>
+
+        <!-- STD STEP 3: Contact -->
+        <div class="std-step" id="std-step-3">
+          <label id="phone-label">Your Phone Number (for SMS updates)</label>
+          <input type="tel" name="phone_number" id="phone_number"
+                 placeholder="e.g. 0731234567" required/>
+
+          <!-- PRIVACY REASSURANCE -->
+          <div class="privacy-note">
+            <span class="lock">🔒</span>
+            <p id="privacy-note-text">
+              <strong>Your number is safe.</strong> We only use it to send you a reference number and status updates about your report. We will never share, sell, or use it for marketing. CityMenderSA is fully POPIA-compliant.
+            </p>
+          </div>
+
+          <div class="step-nav">
+            <button type="button" class="back-btn" onclick="stdBack(3)">← Back</button>
+            <button type="submit" class="next-btn" id="submit-btn">Submit Report</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SIMPLIFIED FORM — One step at a time      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="simplified-form" style="display:none; width:100%; max-width:560px; margin-top:20px;">
+    <div class="simplified-card">
+
+      <!-- Language badge in simplified form -->
+      <div class="lang-bar visible" id="simp-lang-bar">
+        <span class="lang-badge" id="simp-lang-badge">🌐 English selected</span>
+        <button class="lang-change" onclick="resetLanguage()">Change language</button>
+      </div>
+
+      <div class="simp-step-counter" id="step-counter">Question 1 of 4</div>
+      <div class="simp-progress-bar-wrap">
+        <div class="simp-progress-bar-fill" id="progress-bar" style="width:25%"></div>
+      </div>
+
+      <form method="POST" action="{% url 'report_form' %}" id="simplified-form-el">
+        {% csrf_token %}
+        <input type="hidden" name="language"     id="simp-lang-val"    value="english"/>
+        <input type="hidden" name="mode"                               value="simplified"/>
+        <input type="hidden" name="issue_type"   id="simp-issue-val"/>
+        <input type="hidden" name="address"      id="simp-address-val"/>
+        <input type="hidden" name="description"  id="simp-desc-val"/>
+        <input type="hidden" name="phone_number" id="simp-phone-val"/>
+
+        <!-- S-STEP 1: What is the problem -->
+        <div class="s-step active" id="s-step-1">
+          <h3 id="s-q1">What is the problem?</h3>
+          <p id="s-q1-desc">Press the button that matches your problem</p>
+          <div class="big-options">
+            <button type="button" class="big-option" onclick="selectIssue('pothole', this)"     id="s-pothole">🕳️ Pothole on the road</button>
+            <button type="button" class="big-option" onclick="selectIssue('water_leak', this)"  id="s-water">💧 Water leak</button>
+            <button type="button" class="big-option" onclick="selectIssue('waste', this)"       id="s-waste">🗑️ Waste not collected</button>
+            <button type="button" class="big-option" onclick="selectIssue('electricity', this)" id="s-electricity">⚡ No electricity</button>
+            <button type="button" class="big-option" onclick="selectIssue('other', this)"       id="s-other">❓ Something else</button>
+          </div>
+          <div class="s-nav">
+            <button type="button" class="s-next-btn" id="s-next-1" onclick="goToStep(2)" disabled>Next →</button>
+          </div>
+        </div>
+
+        <!-- S-STEP 2: Where -->
+        <div class="s-step" id="s-step-2">
+          <h3 id="s-q2">Where is the problem?</h3>
+          <p id="s-q2-desc">Type your street name and area</p>
+          <input type="text" id="simp-address-input"
+                 placeholder="e.g. 12 Main Street, Soweto"
+                 oninput="document.getElementById('simp-address-val').value=this.value"/>
+          <div class="s-nav">
+            <button type="button" class="s-back-btn" onclick="goToStep(1)">← Back</button>
+            <button type="button" class="s-next-btn" onclick="validateAndNext('simp-address-input',3)">Next →</button>
+          </div>
+        </div>
+
+        <!-- S-STEP 3: Tell us more -->
+        <div class="s-step" id="s-step-3">
+          <h3 id="s-q3">Tell us more</h3>
+          <p id="s-q3-desc">Describe the problem in a few words</p>
+          <textarea id="simp-desc-input"
+                    placeholder="e.g. There is a big pothole outside my house..."
+                    oninput="document.getElementById('simp-desc-val').value=this.value"></textarea>
+          <div class="s-nav">
+            <button type="button" class="s-back-btn" onclick="goToStep(2)">← Back</button>
+            <button type="button" class="s-next-btn" onclick="validateAndNext('simp-desc-input',4)">Next →</button>
+          </div>
+        </div>
+
+        <!-- S-STEP 4: Phone -->
+        <div class="s-step" id="s-step-4">
+          <h3 id="s-q4">Your phone number</h3>
+          <p id="s-q4-desc">We will send you updates about your report via SMS</p>
+          <input type="tel" id="simp-phone-input"
+                 placeholder="e.g. 0731234567"
+                 oninput="document.getElementById('simp-phone-val').value=this.value"/>
+
+          <!-- PRIVACY REASSURANCE simplified -->
+          <div class="simp-privacy-note">
+            <span style="font-size:20px;flex-shrink:0;">🔒</span>
+            <p id="simp-privacy-text">
+              <strong>Your number is safe.</strong> We only use it to send your reference number and status updates. We will never sell or share it. CityMenderSA is POPIA-compliant.
+            </p>
+          </div>
+
+          <div class="s-nav">
+            <button type="button" class="s-back-btn" onclick="goToStep(3)">← Back</button>
+          </div>
+          <button type="submit" class="s-submit-btn" id="s-submit-btn"
+                  onclick="return validateSimplified()">
+            ✓ Send My Report
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="back-link" style="margin-top:20px;">
+    <span id="track-text">Already reported?</span>
+    <a href="{% url 'track_report' %}" id="track-link"> Track your issue</a>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+
+/* ── LANGUAGE NAMES FOR BADGE ── */
+const langNames = {
+  english:   'English',
+  zulu:      'Zulu',
+  xhosa:     'Xhosa',
+  sotho:     'Sotho',
+  afrikaans: 'Afrikaans',
+};
+
+let selectedLang = 'english';
+
+/* ── RESET LANGUAGE (go back to selector) ── */
+function resetLanguage() {
+  document.getElementById('lang-select-wrap').style.display = 'block';
+  document.getElementById('lang-bar').classList.remove('visible');
+  document.getElementById('language-select').value = '';
+  document.getElementById('standard-form').style.display = 'none';
+  document.getElementById('simplified-form').style.display = 'none';
+  selectedLang = '';
+}
+
+/* ── MODE SELECTION ── */
+function selectMode(mode) {
+  if (!selectedLang) {
+    alert('Please select a language first.');
+    return;
+  }
+  if (mode === 'standard') {
+    document.getElementById('standard-form').style.display = 'block';
+    document.getElementById('simplified-form').style.display = 'none';
+  } else {
+    document.getElementById('simplified-form').style.display = 'block';
+    document.getElementById('standard-form').style.display = 'none';
+  }
+  syncLanguage();
+}
+
+/* ── SYNC LANGUAGE TO HIDDEN INPUTS ── */
+function syncLanguage() {
+  document.getElementById('std-lang-val').value  = selectedLang;
+  document.getElementById('simp-lang-val').value = selectedLang;
+}
+
+/* ── STANDARD FORM: STEPS ── */
+let stdCurrentStep = 1;
+const stdTotalSteps = 3;
+
+function stdNext(step) {
+  if (step === 1) {
+    const issue = document.getElementById('issue_type').value;
+    if (!issue) {
+      document.getElementById('issue_type').style.borderColor = '#e24b4a';
+      document.getElementById('issue_type').focus();
+      return;
+    }
+    document.getElementById('issue_type').style.borderColor = '#ddd';
+  }
+  if (step === 2) {
+    const addr = document.getElementById('address').value.trim();
+    const desc = document.getElementById('description').value.trim();
+    if (!addr) { document.getElementById('address').style.borderColor = '#e24b4a'; document.getElementById('address').focus(); return; }
+    if (!desc) { document.getElementById('description').style.borderColor = '#e24b4a'; document.getElementById('description').focus(); return; }
+    document.getElementById('address').style.borderColor = '#ddd';
+    document.getElementById('description').style.borderColor = '#ddd';
+  }
+  document.getElementById('std-step-' + step).classList.remove('active');
+  stdCurrentStep = step + 1;
+  document.getElementById('std-step-' + stdCurrentStep).classList.add('active');
+  updateStdProgress();
+}
+
+function stdBack(step) {
+  document.getElementById('std-step-' + step).classList.remove('active');
+  stdCurrentStep = step - 1;
+  document.getElementById('std-step-' + stdCurrentStep).classList.add('active');
+  updateStdProgress();
+}
+
+function updateStdProgress() {
+  const pct = (stdCurrentStep / stdTotalSteps) * 100;
+  document.getElementById('std-progress-fill').style.width = pct + '%';
+  document.getElementById('std-step-label').textContent =
+    'Step ' + stdCurrentStep + ' of ' + stdTotalSteps;
+  for (let i = 1; i <= stdTotalSteps; i++) {
+    const dot = document.getElementById('std-dot-' + i);
+    dot.classList.remove('active', 'done');
+    if (i < stdCurrentStep)       dot.classList.add('done');
+    else if (i === stdCurrentStep) dot.classList.add('active');
+  }
+}
+
+/* ── SIMPLIFIED FORM: STEPS ── */
+let currentStep = 1;
+const totalSteps = 4;
+
+function goToStep(n) {
+  document.getElementById('s-step-' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('s-step-' + currentStep).classList.add('active');
+  updateSimpProgress();
+}
+
+function validateAndNext(inputId, nextStep) {
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) {
+    document.getElementById(inputId).style.borderColor = '#e24b4a';
+    document.getElementById(inputId).focus();
+    return;
+  }
+  document.getElementById(inputId).style.borderColor = '#ddd';
+  goToStep(nextStep);
+}
+
+function updateSimpProgress() {
+  const pct = (currentStep / totalSteps) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('step-counter').textContent =
+    'Question ' + currentStep + ' of ' + totalSteps;
+}
+
+function selectIssue(value, btn) {
+  document.querySelectorAll('.big-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('simp-issue-val').value = value;
+  document.getElementById('s-next-1').disabled = false;
+}
+
+function validateSimplified() {
+  const phone = document.getElementById('simp-phone-input').value.trim();
+  if (!phone) {
+    document.getElementById('simp-phone-input').style.borderColor = '#e24b4a';
+    document.getElementById('simp-phone-input').focus();
+    return false;
+  }
+  document.getElementById('simp-phone-val').value = phone;
+  return true;
+}
+
+/* ── TRANSLATIONS ── */
+const translations = {
+  english: {
+    pageTitle:"Report an Issue", pageSubtitle:"Help improve your community by logging a service delivery problem",
+    step1:"Step 1 — Select your language", langLabel:"Preferred Language",
+    step2:"Step 2 — Choose reporting mode",
+    modeStandard:"Standard Mode", modeStandardDesc:"For users comfortable with technology",
+    modeSimplified:"Simplified Mode", modeSimplifiedDesc:"Larger text, one step at a time",
+    issueLabel:"Issue Type", issuePlaceholder:"-- Select issue type --",
+    issuePothole:"Pothole", issueWater:"Water Leak", issueWaste:"Uncollected Waste",
+    issueElectricity:"Electricity Outage", issueOther:"Other",
+    addressLabel:"Street Address", addressPlaceholder:"e.g. 12 Main Street, Soweto",
+    descLabel:"Describe the issue", descPlaceholder:"Briefly describe the problem...",
+    phoneLabel:"Your Phone Number (for SMS updates)", phonePlaceholder:"e.g. 0731234567",
+    privacyNote:"<strong>Your number is safe.</strong> We only use it to send you a reference number and status updates. We will never share, sell, or use it for marketing. CityMenderSA is fully POPIA-compliant.",
+    submitBtn:"Submit Report", trackText:"Already reported?", trackLink:"Track your issue",
+    sQ1:"What is the problem?", sQ1desc:"Press the button that matches your problem",
+    sPothole:"🕳️ Pothole on the road", sWater:"💧 Water leak",
+    sWaste:"🗑️ Waste not collected", sElectricity:"⚡ No electricity", sOther:"❓ Something else",
+    sQ2:"Where is the problem?", sQ2desc:"Type your street name and area",
+    sQ3:"Tell us more", sQ3desc:"Describe the problem in a few words",
+    sQ4:"Your phone number", sQ4desc:"We will send you updates about your report via SMS",
+    simpPrivacy:"<strong>Your number is safe.</strong> We only use it to send your reference number and status updates. We will never sell or share it. CityMenderSA is POPIA-compliant.",
+    sSubmit:"✓ Send My Report",
+    stdLabel1:"Issue", stdLabel2:"Location", stdLabel3:"Contact",
+  },
+  afrikaans: {
+    pageTitle:"Rapporteer 'n Probleem", pageSubtitle:"Help om jou gemeenskap te verbeter",
+    step1:"Stap 1 — Kies jou taal", langLabel:"Voorkeur Taal",
+    step2:"Stap 2 — Kies rapporteringsmodus",
+    modeStandard:"Standaard Modus", modeStandardDesc:"Vir gebruikers wat gemaklik is met tegnologie",
+    modeSimplified:"Vereenvoudigde Modus", modeSimplifiedDesc:"Groter teks, een stap op 'n slag",
+    issueLabel:"Tipe Probleem", issuePlaceholder:"-- Kies tipe probleem --",
+    issuePothole:"Padgat", issueWater:"Waterlek", issueWaste:"Onversamelde Afval",
+    issueElectricity:"Kragonderbreking", issueOther:"Ander",
+    addressLabel:"Straatadres", addressPlaceholder:"bv. Hoofstraat 12, Soweto",
+    descLabel:"Beskryf die probleem", descPlaceholder:"Beskryf kortliks...",
+    phoneLabel:"Jou Telefoonnommer (vir SMS-opdaterings)", phonePlaceholder:"bv. 0731234567",
+    privacyNote:"<strong>Jou nommer is veilig.</strong> Ons gebruik dit slegs vir jou verwysingsnommer en opdaterings. Ons sal dit nooit deel of verkoop nie. CityMenderSA voldoen aan POPIA.",
+    submitBtn:"Dien Verslag In", trackText:"Al gerapporteer?", trackLink:"Volg jou probleem",
+    sQ1:"Wat is die probleem?", sQ1desc:"Druk die knoppie wat jou probleem beskryf",
+    sPothole:"🕳️ Padgat op die pad", sWater:"💧 Waterlek",
+    sWaste:"🗑️ Afval nie opgetel nie", sElectricity:"⚡ Geen krag nie", sOther:"❓ Iets anders",
+    sQ2:"Waar is die probleem?", sQ2desc:"Tik jou straatnaam en gebied",
+    sQ3:"Vertel ons meer", sQ3desc:"Beskryf die probleem in 'n paar woorde",
+    sQ4:"Jou telefoonnommer", sQ4desc:"Ons sal jou via SMS opdateer",
+    simpPrivacy:"<strong>Jou nommer is veilig.</strong> Ons gebruik dit slegs vir opdaterings. Ons sal dit nooit deel nie. POPIA-voldoen.",
+    sSubmit:"✓ Stuur My Verslag",
+    stdLabel1:"Probleem", stdLabel2:"Ligging", stdLabel3:"Kontak",
+  },
+  zulu: {
+    pageTitle:"Bika Inkinga", pageSubtitle:"Siza ukuthuthukisa umphakathi wakho",
+    step1:"Isinyathelo 1 — Khetha ulimi lwakho", langLabel:"Ulimi Olukhethiwe",
+    step2:"Isinyathelo 2 — Khetha indlela yokubika",
+    modeStandard:"Indlela Ejwayelekile", modeStandardDesc:"Yabasebenzisi abazohlangana nobuchwepheshe",
+    modeSimplified:"Indlela Elula", modeSimplifiedDesc:"Umbhalo omkhulu, isinyathelo esisodwa",
+    issueLabel:"Uhlobo Lwenkinga", issuePlaceholder:"-- Khetha uhlobo lwenkinga --",
+    issuePothole:"Umgodi Emigwaqeni", issueWater:"Ukuphuma Kwamanzi", issueWaste:"Udoti Ongakhiwa",
+    issueElectricity:"Ukuphela Kukagesi", issueOther:"Okunye",
+    addressLabel:"Ikheli Lesitarata", addressPlaceholder:"isb. 12 Umgwaqo Omkhulu, Soweto",
+    descLabel:"Chaza inkinga", descPlaceholder:"Chaza kafushane...",
+    phoneLabel:"Inombolo Yakho Yocingo (izaziso ze-SMS)", phonePlaceholder:"isb. 0731234567",
+    privacyNote:"<strong>Inombolo yakho iphephile.</strong> Sisebenzisa yona kuphela ukuthumela izibuyekezo. Ngeke sayidayise noma siyabelane. CityMenderSA iyahambisana ne-POPIA.",
+    submitBtn:"Thumela Umbiko", trackText:"Usuvele wabika?", trackLink:"Landelela inkinga yakho",
+    sQ1:"Yini inkinga?", sQ1desc:"Chofoza inkinobho efanele inkinga yakho",
+    sPothole:"🕳️ Umgodi emigwaqeni", sWater:"💧 Ukuphuma kwamanzi",
+    sWaste:"🗑️ Udoti ongakhiwa", sElectricity:"⚡ Akukho ugesi", sOther:"❓ Okunye",
+    sQ2:"Kuphi inkinga?", sQ2desc:"Bhala igama lesitarata",
+    sQ3:"Sitshele kabanzi", sQ3desc:"Chaza ngamagama ambalwa",
+    sQ4:"Inombolo yakho yocingo", sQ4desc:"Sizokhuthaza nge-SMS",
+    simpPrivacy:"<strong>Inombolo yakho iphephile.</strong> Sisebenzisa yona kuphela. Ngeke sayidayise. POPIA-compliant.",
+    sSubmit:"✓ Thumela Umbiko Wami",
+    stdLabel1:"Inkinga", stdLabel2:"Indawo", stdLabel3:"Oxhumana",
+  },
+  xhosa: {
+    pageTitle:"Bika Ingxaki", pageSubtitle:"Nceda ukuphucula uluntu lwakho",
+    step1:"Nyathelo 1 — Khetha ulwimi lwakho", langLabel:"Ulwimi Olukhethiweyo",
+    step2:"Nyathelo 2 — Khetha indlela yokubika",
+    modeStandard:"Indlela Ejwayelekileyo", modeStandardDesc:"Yabasebenzisi abaqhelene nobuchwepheshe",
+    modeSimplified:"Indlela Elula", modeSimplifiedDesc:"Umbhalo omkhulu, inyathelo enye",
+    issueLabel:"Uhlobo Lwengxaki", issuePlaceholder:"-- Khetha uhlobo lwengxaki --",
+    issuePothole:"Umngxuma Endleleni", issueWater:"Ukuphuma Kwamanzi", issueWaste:"Inkunkuma Engakhiwa",
+    issueElectricity:"Ukuphela Kombane", issueOther:"Okunye",
+    addressLabel:"Idilesi Yesitrato", addressPlaceholder:"umz. 12 Isitrato, Soweto",
+    descLabel:"Chaza ingxaki", descPlaceholder:"Chaza ngokufutshane...",
+    phoneLabel:"Inombolo Yakho Yefowuni (izaziso ze-SMS)", phonePlaceholder:"umz. 0731234567",
+    privacyNote:"<strong>Inombolo yakho ikhuselekile.</strong> Sisebenzisa yona kuphela ukuthumela izibuyekezo. Ngeke siyithengise. CityMenderSA iyahambisana ne-POPIA.",
+    submitBtn:"Thumela Ingxelo", trackText:"Usebike kakade?", trackLink:"Landela ingxaki yakho",
+    sQ1:"Yintoni ingxaki?", sQ1desc:"Cofa iqhosha elifanelana nengxaki yakho",
+    sPothole:"🕳️ Umngxuma endleleni", sWater:"💧 Ukuphuma kwamanzi",
+    sWaste:"🗑️ Inkunkuma engakhiwa", sElectricity:"⚡ Akukho mbane", sOther:"❓ Enye into",
+    sQ2:"Ingxaki ikuphi?", sQ2desc:"Bhala igama lesitrato",
+    sQ3:"Sixelele ngakumbi", sQ3desc:"Chaza ngamagama ambalwa",
+    sQ4:"Inombolo yakho yefowuni", sQ4desc:"Siya kukuthumela ii-SMS",
+    simpPrivacy:"<strong>Inombolo yakho ikhuselekile.</strong> Sisebenzisa yona kuphela. Ngeke siyithengise. POPIA-compliant.",
+    sSubmit:"✓ Thumela Ingxelo Yam",
+    stdLabel1:"Ingxaki", stdLabel2:"Indawo", stdLabel3:"Qhagamshelana",
+  },
+  sotho: {
+    pageTitle:"Bega Bothata", pageSubtitle:"Thusa ho ntlafatsa setjhaba sa hao",
+    step1:"Mohato 1 — Kgetha puo ya hao", langLabel:"Puo e Kgethiloeng",
+    step2:"Mohato 2 — Kgetha mokgwa wa ho bega",
+    modeStandard:"Mokgwa o Tloaelehileng", modeStandardDesc:"Bakeng sa basebedisi ba nang le tsebo",
+    modeSimplified:"Mokgwa o Bonolo", modeSimplifiedDesc:"Mongolo o moholo, mohato o le mong",
+    issueLabel:"Mofuta wa Bothata", issuePlaceholder:"-- Kgetha mofuta wa bothata --",
+    issuePothole:"Moferefera Tseleng", issueWater:"Tsela ya Metsi", issueWaste:"Marara a sa Kgutswe",
+    issueElectricity:"Ho Haela ha Motlakase", issueOther:"Tse Ding",
+    addressLabel:"Aterese ya Seterata", addressPlaceholder:"mohlala. 12 Seterata, Soweto",
+    descLabel:"Hlalosa bothata", descPlaceholder:"Hlalosa ka bofutsana...",
+    phoneLabel:"Nomoro ya Fono ya Hao (disupiso tsa SMS)", phonePlaceholder:"mohlala. 0731234567",
+    privacyNote:"<strong>Nomoro ya hao e bolokehile.</strong> Re e sebedisa feela ho romela disupiso. Re ke ke ra e rekisa. CityMenderSA e a dumellana le POPIA.",
+    submitBtn:"Romela Tlaleho", trackText:"Ho setse o begile?", trackLink:"Latela bothata ba hao",
+    sQ1:"Ke bothata bofe?", sQ1desc:"Kgomarela konopo e tshwanang le bothata ba hao",
+    sPothole:"🕳️ Moferefera tseleng", sWater:"💧 Metsi a tshela",
+    sWaste:"🗑️ Marara ha a kgutswe", sElectricity:"⚡ Ha ho motlakase", sOther:"❓ Se seng",
+    sQ2:"Bothata bo hokae?", sQ2desc:"Ngola lebitso la seterata",
+    sQ3:"Re bolelle haholwanyane", sQ3desc:"Hlalosa ka mantswe a maleba",
+    sQ4:"Nomoro ya fono ya hao", sQ4desc:"Re tla o romela disupiso tsa SMS",
+    simpPrivacy:"<strong>Nomoro ya hao e bolokehile.</strong> Re e sebedisa feela. Re ke ke ra e rekisa. POPIA-compliant.",
+    sSubmit:"✓ Romela Tlaleho Ya Ka",
+    stdLabel1:"Bothata", stdLabel2:"Sebaka", stdLabel3:"Kopano",
+  },
+};
+
+function translatePage(lang) {
+  if (!lang || !translations[lang]) return;
+  selectedLang = lang;
+  const t = translations[lang];
+  const name = langNames[lang];
+
+  /* hide language select, show badge */
+  document.getElementById('lang-select-wrap').style.display = 'none';
+  document.getElementById('lang-bar').classList.add('visible');
+  document.getElementById('lang-badge-text').textContent = '🌐 ' + name + ' selected';
+  document.getElementById('std-lang-badge').textContent  = '🌐 ' + name + ' selected';
+  document.getElementById('simp-lang-badge').textContent = '🌐 ' + name + ' selected';
+
+  /* mode selector */
+  document.getElementById('page-title').textContent           = t.pageTitle;
+  document.getElementById('page-subtitle').textContent        = t.pageSubtitle;
+  document.getElementById('step2-label').textContent          = t.step2;
+  document.getElementById('mode-standard').textContent        = t.modeStandard;
+  document.getElementById('mode-standard-desc').textContent   = t.modeStandardDesc;
+  document.getElementById('mode-simplified').textContent      = t.modeSimplified;
+  document.getElementById('mode-simplified-desc').textContent = t.modeSimplifiedDesc;
+
+  /* standard form */
+  document.getElementById('issue-label').textContent          = t.issueLabel;
+  document.getElementById('issue-placeholder').textContent    = t.issuePlaceholder;
+  document.getElementById('issue-pothole').textContent        = t.issuePothole;
+  document.getElementById('issue-water').textContent          = t.issueWater;
+  document.getElementById('issue-waste').textContent          = t.issueWaste;
+  document.getElementById('issue-electricity').textContent    = t.issueElectricity;
+  document.getElementById('issue-other').textContent          = t.issueOther;
+  document.getElementById('address-label').textContent        = t.addressLabel;
+  document.getElementById('address').placeholder              = t.addressPlaceholder;
+  document.getElementById('desc-label').textContent           = t.descLabel;
+  document.getElementById('description').placeholder          = t.descPlaceholder;
+  document.getElementById('phone-label').textContent          = t.phoneLabel;
+  document.getElementById('phone_number').placeholder         = t.phonePlaceholder;
+  document.getElementById('privacy-note-text').innerHTML      = t.privacyNote;
+  document.getElementById('submit-btn').textContent           = t.submitBtn;
+  document.getElementById('std-label-1').textContent          = t.stdLabel1;
+  document.getElementById('std-label-2').textContent          = t.stdLabel2;
+  document.getElementById('std-label-3').textContent          = t.stdLabel3;
+
+  /* simplified form */
+  document.getElementById('s-q1').textContent                 = t.sQ1;
+  document.getElementById('s-q1-desc').textContent            = t.sQ1desc;
+  document.getElementById('s-pothole').textContent            = t.sPothole;
+  document.getElementById('s-water').textContent              = t.sWater;
+  document.getElementById('s-waste').textContent              = t.sWaste;
+  document.getElementById('s-electricity').textContent        = t.sElectricity;
+  document.getElementById('s-other').textContent              = t.sOther;
+  document.getElementById('s-q2').textContent                 = t.sQ2;
+  document.getElementById('s-q2-desc').textContent            = t.sQ2desc;
+  document.getElementById('s-q3').textContent                 = t.sQ3;
+  document.getElementById('s-q3-desc').textContent            = t.sQ3desc;
+  document.getElementById('s-q4').textContent                 = t.sQ4;
+  document.getElementById('s-q4-desc').textContent            = t.sQ4desc;
+  document.getElementById('simp-privacy-text').innerHTML      = t.simpPrivacy;
+  document.getElementById('s-submit-btn').textContent         = t.sSubmit;
+  document.getElementById('track-text').textContent           = t.trackText;
+  document.getElementById('track-link').textContent           = t.trackLink;
+
+  syncLanguage();
+}
+</script>
+{% endblock %}
+
+{% endblock %}
